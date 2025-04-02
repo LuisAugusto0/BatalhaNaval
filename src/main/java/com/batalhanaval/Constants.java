@@ -1,15 +1,15 @@
 package com.batalhanaval;
 
 /**
- * Constants used in the Battleship game.
+ * Constants used throughout the Battleship game.
  */
 public class Constants {
     // Board Configuration
     public static final int BOARD_SIZE = 10;
     
     // Network Communication Ports
-    public static final int DEFAULT_TCP_PORT = 5000;
-    public static final int DEFAULT_UDP_PORT = 5001;
+    public static final int DEFAULT_PORT = 6969;
+    public static final int DISCOVERY_PORT = 6970;
     
     // Ship Types and Dimensions
     public static final int CARRIER_SIZE = 5;
@@ -35,7 +35,7 @@ public class Constants {
     public static final String ATTACK_INVALID = "INVALID";
     
     // Game States
-    public static final int GAME_SETUP = 0;
-    public static final int GAME_PLAYING = 1;
-    public static final int GAME_OVER = 2;
+    public static final String GAME_STATE_SETUP = "SETUP";
+    public static final String GAME_STATE_PLAYING = "PLAYING";
+    public static final String GAME_STATE_GAME_OVER = "GAME_OVER";
 } 

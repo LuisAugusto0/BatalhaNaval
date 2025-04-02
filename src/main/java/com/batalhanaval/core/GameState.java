@@ -15,7 +15,7 @@ public class GameState implements Serializable {
     private final Board playerBoard;
     private final Board opponentBoard;
     private boolean isPlayerTurn;
-    private int gameStatus;
+    private String gameStatus;
     private String message;
     
     /**
@@ -27,7 +27,7 @@ public class GameState implements Serializable {
         playerBoard = new Board(boardSize);
         opponentBoard = new Board(boardSize);
         isPlayerTurn = true;  // By default, local player starts
-        gameStatus = Constants.GAME_SETUP;
+        gameStatus = Constants.GAME_STATE_SETUP;
         message = "Position your ships.";
     }
     
@@ -67,16 +67,16 @@ public class GameState implements Serializable {
     }
     
     /**
-     * @return the current game status (GAME_SETUP, GAME_PLAYING, GAME_OVER)
+     * @return the current game status (GAME_STATE_SETUP, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER)
      */
-    public int getGameStatus() {
+    public String getGameStatus() {
         return gameStatus;
     }
     
     /**
      * @param status sets the new game status
      */
-    public void setGameStatus(int status) {
+    public void setGameStatus(String status) {
         this.gameStatus = status;
     }
     
@@ -130,7 +130,7 @@ public class GameState implements Serializable {
      * @return attack result or null if it's not the player's turn or the game is not in progress
      */
     public String processPlayerAttack(Position position) {
-        if (gameStatus != Constants.GAME_PLAYING || !isPlayerTurn) {
+        if (!gameStatus.equals(Constants.GAME_STATE_PLAYING) || !isPlayerTurn) {
             return null;  // Not the player's turn or game is not in progress
         }
         
@@ -151,13 +151,13 @@ public class GameState implements Serializable {
                     // Check if all ships have been sunk
                     if (opponentBoard.areAllShipsSunk()) {
                         message = "You won! All opponent's ships have been sunk.";
-                        gameStatus = Constants.GAME_OVER;
+                        gameStatus = Constants.GAME_STATE_GAME_OVER;
                     }
                     break;
             }
             
             // If the game is still in progress, switch turns
-            if (gameStatus == Constants.GAME_PLAYING) {
+            if (gameStatus.equals(Constants.GAME_STATE_PLAYING)) {
                 switchTurn();
             }
         }
@@ -172,7 +172,7 @@ public class GameState implements Serializable {
      * @return attack result or null if it's the player's turn or the game is not in progress
      */
     public String processOpponentAttack(Position position) {
-        if (gameStatus != Constants.GAME_PLAYING || isPlayerTurn) {
+        if (!gameStatus.equals(Constants.GAME_STATE_PLAYING) || isPlayerTurn) {
             return null;  // It's the player's turn or game is not in progress
         }
         
@@ -193,13 +193,13 @@ public class GameState implements Serializable {
                     // Check if all ships have been sunk
                     if (playerBoard.areAllShipsSunk()) {
                         message = "You lost! All your ships have been sunk.";
-                        gameStatus = Constants.GAME_OVER;
+                        gameStatus = Constants.GAME_STATE_GAME_OVER;
                     }
                     break;
             }
             
             // If the game is still in progress, switch turns
-            if (gameStatus == Constants.GAME_PLAYING) {
+            if (gameStatus.equals(Constants.GAME_STATE_PLAYING)) {
                 switchTurn();
             }
         }
@@ -218,13 +218,13 @@ public class GameState implements Serializable {
     }
     
     /**
-     * Starts the game, changing status to GAME_PLAYING.
+     * Starts the game, changing status to GAME_STATE_PLAYING.
      *
      * @return true if the game was successfully started
      */
     public boolean startGame() {
-        if (isReadyToStart() && gameStatus == Constants.GAME_SETUP) {
-            gameStatus = Constants.GAME_PLAYING;
+        if (isReadyToStart() && gameStatus.equals(Constants.GAME_STATE_SETUP)) {
+            gameStatus = Constants.GAME_STATE_PLAYING;
             message = isPlayerTurn ? "Your turn. Make your attack." : "Waiting for opponent to attack.";
             return true;
         }
@@ -238,7 +238,7 @@ public class GameState implements Serializable {
         playerBoard.clear();
         opponentBoard.clear();
         isPlayerTurn = true;
-        gameStatus = Constants.GAME_SETUP;
+        gameStatus = Constants.GAME_STATE_SETUP;
         message = "Game reset. Position your ships.";
     }
 } 

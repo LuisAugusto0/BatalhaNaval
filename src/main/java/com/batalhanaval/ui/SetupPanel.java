@@ -12,7 +12,7 @@ import com.batalhanaval.core.Position;
 import com.batalhanaval.core.Ship;
 
 /**
- * Painel para posicionamento dos navios no tabuleiro.
+ * Panel for positioning ships on the board.
  */
 public class SetupPanel extends JPanel {
     
@@ -32,8 +32,8 @@ public class SetupPanel extends JPanel {
     private boolean isVertical = false;
     
     /**
-     * Construtor do painel de configuração inicial.
-     * @param mainWindow Referência para a janela principal.
+     * Constructor for the setup panel.
+     * @param mainWindow Reference to the main window.
      */
     public SetupPanel(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -44,11 +44,11 @@ public class SetupPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(Color.BLACK);
         
-        // Painel do tabuleiro
+        // Board panel
         boardPanel = new BoardPanel(playerBoard, false);
         boardPanel.setClickHandler(this::handleBoardClick);
         
-        // Painel de controle (direita)
+        // Control panel (right)
         setupControlPanel();
         
         add(boardPanel, BorderLayout.CENTER);
@@ -58,7 +58,7 @@ public class SetupPanel extends JPanel {
     }
     
     /**
-     * Configura o painel de controle com as opções de posicionamento.
+     * Sets up the control panel with positioning options.
      */
     private void setupControlPanel() {
         controlPanel = new JPanel();
@@ -67,28 +67,28 @@ public class SetupPanel extends JPanel {
         controlPanel.setPreferredSize(new Dimension(200, 400));
         controlPanel.setBackground(Color.BLACK);
         
-        // Título
-        JLabel titleLabel = new JLabel("Posicione seus Navios");
+        // Title
+        JLabel titleLabel = new JLabel("Position Your Ships");
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(Color.WHITE);
         controlPanel.add(titleLabel);
         controlPanel.add(Box.createVerticalStrut(20));
         
-        // Seleção de navio
-        JLabel shipLabel = new JLabel("Tipo de Navio:");
+        // Ship selection
+        JLabel shipLabel = new JLabel("Ship Type:");
         shipLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         shipLabel.setForeground(Color.WHITE);
         controlPanel.add(shipLabel);
         controlPanel.add(Box.createVerticalStrut(5));
         
-        // Cria um painel personalizado para o combobox para melhor visualização
+        // Create a custom panel for the combobox for better visibility
         JPanel comboPanel = new JPanel();
         comboPanel.setBackground(Color.BLACK);
         comboPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         comboPanel.setMaximumSize(new Dimension(180, 30));
         
-        // Configura o combobox
+        // Configure the combobox
         shipTypeCombo = new JComboBox<>();
         shipTypeCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -115,8 +115,8 @@ public class SetupPanel extends JPanel {
         controlPanel.add(comboPanel);
         controlPanel.add(Box.createVerticalStrut(20));
         
-        // Orientação (horizontal/vertical)
-        JLabel orientationLabel = new JLabel("Orientação:");
+        // Orientation (horizontal/vertical)
+        JLabel orientationLabel = new JLabel("Orientation:");
         orientationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         orientationLabel.setForeground(Color.WHITE);
         controlPanel.add(orientationLabel);
@@ -148,8 +148,8 @@ public class SetupPanel extends JPanel {
         controlPanel.add(radioPanel);
         controlPanel.add(Box.createVerticalStrut(30));
         
-        // Botão para posicionamento aleatório
-        randomizeButton = new JButton("Posicionar Aleatoriamente");
+        // Button for random positioning
+        randomizeButton = new JButton("Randomize Positions");
         randomizeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         randomizeButton.addActionListener(e -> randomizeShips());
         randomizeButton.setBackground(new Color(50, 50, 50));
@@ -157,8 +157,8 @@ public class SetupPanel extends JPanel {
         controlPanel.add(randomizeButton);
         controlPanel.add(Box.createVerticalStrut(10));
         
-        // Botão para iniciar o jogo
-        startGameButton = new JButton("Iniciar Jogo");
+        // Button to start the game
+        startGameButton = new JButton("Start Game");
         startGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startGameButton.setEnabled(false);
         startGameButton.addActionListener(e -> mainWindow.showGamePanel());
@@ -166,36 +166,36 @@ public class SetupPanel extends JPanel {
         startGameButton.setForeground(Color.WHITE);
         controlPanel.add(startGameButton);
         
-        // Instruções
+        // Instructions
         controlPanel.add(Box.createVerticalStrut(30));
-        JLabel instructionsLabel = new JLabel("<html><body style='width: 180px; color: white'>Selecione o tipo de navio, a orientação e clique no tabuleiro para posicioná-lo.</body></html>");
+        JLabel instructionsLabel = new JLabel("<html><body style='width: 180px; color: white'>Select the ship type, orientation, and click on the board to position it.</body></html>");
         instructionsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         controlPanel.add(instructionsLabel);
         
-        // Seleciona o primeiro navio disponível
+        // Select the first available ship
         if (!availableShips.isEmpty()) {
             selectedShip = availableShips.get(0);
         }
     }
     
     /**
-     * Cria a lista de navios disponíveis para posicionamento.
+     * Creates the list of available ships for positioning.
      */
     private List<Ship> createAvailableShips() {
         List<Ship> ships = new ArrayList<>();
         
-        // Adiciona os navios conforme as constantes
-        ships.add(new Ship("Porta-Aviões", Constants.CARRIER_SIZE));
-        ships.add(new Ship("Encouraçado", Constants.BATTLESHIP_SIZE));
-        ships.add(new Ship("Cruzador", Constants.CRUISER_SIZE));
-        ships.add(new Ship("Submarino", Constants.SUBMARINE_SIZE));
+        // Add ships according to constants
+        ships.add(new Ship("Carrier", Constants.CARRIER_SIZE));
+        ships.add(new Ship("Battleship", Constants.BATTLESHIP_SIZE));
+        ships.add(new Ship("Cruiser", Constants.CRUISER_SIZE));
+        ships.add(new Ship("Submarine", Constants.SUBMARINE_SIZE));
         ships.add(new Ship("Destroyer", Constants.DESTROYER_SIZE));
         
         return ships;
     }
     
     /**
-     * Atualiza o combo box com os navios disponíveis.
+     * Updates the combo box with available ships.
      */
     private void updateShipTypeCombo() {
         shipTypeCombo.removeAllItems();
@@ -210,7 +210,7 @@ public class SetupPanel extends JPanel {
     }
     
     /**
-     * Handler para mudança de seleção no combo de navios.
+     * Handler for selection change in the ship combo.
      */
     private void handleShipTypeChange(ActionEvent e) {
         int index = shipTypeCombo.getSelectedIndex();
@@ -220,103 +220,97 @@ public class SetupPanel extends JPanel {
     }
     
     /**
-     * Handler para cliques no tabuleiro.
+     * Handler for clicks on the board.
      */
     private void handleBoardClick(int row, int col) {
         if (selectedShip == null) {
-            mainWindow.updateStatusMessage("Selecione um navio primeiro!");
+            mainWindow.updateStatusMessage("Select a ship first!");
             return;
         }
         
-        // Copia o navio selecionado para manter a lista original intacta
+        // Copy the selected ship to keep the original list intact
         Ship shipToPlace = new Ship(selectedShip.getName(), selectedShip.getSize());
         Position startPos = new Position(row, col);
         
         try {
             if (playerBoard.placeShip(shipToPlace, startPos, isVertical)) {
-                // Remove o navio da lista de disponíveis
+                // Remove the ship from the available list
                 availableShips.remove(selectedShip);
                 
-                // Atualiza a UI
+                // Update the UI
                 updateShipTypeCombo();
                 boardPanel.repaint();
                 
-                // Se não houver mais navios, habilita o botão de início
+                // If there are no more ships, enable the start button
                 if (availableShips.isEmpty()) {
-                    mainWindow.updateStatusMessage("Todos os navios posicionados! Clique em 'Iniciar Jogo'.");
+                    mainWindow.updateStatusMessage("All ships positioned! Click 'Start Game'.");
                 } else {
-                    mainWindow.updateStatusMessage("Navio posicionado com sucesso!");
-                    // Seleciona o próximo navio disponível
+                    mainWindow.updateStatusMessage("Ship positioned successfully!");
+                    // Select the next available ship
                     if (!availableShips.isEmpty()) {
                         selectedShip = availableShips.get(0);
+                        shipTypeCombo.setSelectedIndex(0);
                     } else {
                         selectedShip = null;
                     }
                 }
                 
                 updateStartButtonState();
+            } else {
+                mainWindow.updateStatusMessage("Cannot place ship here. Try another position.");
             }
-        } catch (IllegalArgumentException ex) {
-            mainWindow.updateStatusMessage("Posição inválida: " + ex.getMessage());
+        } catch (Exception ex) {
+            mainWindow.updateStatusMessage("Error placing ship: " + ex.getMessage());
         }
     }
     
     /**
-     * Posiciona os navios aleatoriamente no tabuleiro.
+     * Randomly positions all ships on the board.
      */
     private void randomizeShips() {
-        // Limpa o tabuleiro atual
+        // Clear the board and reset available ships
         playerBoard = new Board(Constants.BOARD_SIZE);
         availableShips = createAvailableShips();
         
-        // Tenta posicionar cada navio aleatoriamente
-        for (Ship ship : new ArrayList<>(availableShips)) {
+        java.util.Random random = new java.util.Random();
+        List<Ship> shipsToPlace = new ArrayList<>(availableShips);
+        
+        for (Ship ship : shipsToPlace) {
             boolean placed = false;
             int attempts = 0;
             
             while (!placed && attempts < 100) {
-                attempts++;
+                int row = random.nextInt(Constants.BOARD_SIZE);
+                int col = random.nextInt(Constants.BOARD_SIZE);
+                boolean vertical = random.nextBoolean();
                 
-                // Gera posição e orientação aleatórias
-                int row = (int) (Math.random() * Constants.BOARD_SIZE);
-                int col = (int) (Math.random() * Constants.BOARD_SIZE);
-                boolean vertical = Math.random() > 0.5;
-                
-                Ship shipToPlace = new Ship(ship.getName(), ship.getSize());
-                Position startPos = new Position(row, col);
-                
-                try {
-                    if (playerBoard.placeShip(shipToPlace, startPos, vertical)) {
-                        placed = true;
-                        availableShips.remove(ship);
-                    }
-                } catch (IllegalArgumentException ex) {
-                    // Posição inválida, tenta novamente
+                Ship newShip = new Ship(ship.getName(), ship.getSize());
+                if (playerBoard.placeShip(newShip, new Position(row, col), vertical)) {
+                    placed = true;
                 }
+                
+                attempts++;
             }
         }
         
-        // Atualiza a UI
+        // Update the UI
         boardPanel.setBoard(playerBoard);
+        availableShips.clear();
         updateShipTypeCombo();
         updateStartButtonState();
         
-        if (availableShips.isEmpty()) {
-            mainWindow.updateStatusMessage("Todos os navios posicionados aleatoriamente!");
-        } else {
-            mainWindow.updateStatusMessage("Não foi possível posicionar todos os navios aleatoriamente.");
-        }
+        mainWindow.updateStatusMessage("Ships positioned randomly. Ready to start!");
     }
     
     /**
-     * Atualiza o estado do botão de início conforme o posicionamento.
+     * Updates the state of the start button.
      */
     private void updateStartButtonState() {
         startGameButton.setEnabled(availableShips.isEmpty());
     }
     
     /**
-     * Retorna o tabuleiro do jogador.
+     * Returns the player's board.
      */
     public Board getPlayerBoard() {
         return playerBoard;

@@ -6,139 +6,149 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import com.batalhanaval.Constants;
+import com.batalhanaval.core.Board;
 
 /**
- * Janela principal da aplicação Batalha Naval.
- * Contém os painéis de configuração e jogo.
+ * Main window of the Battleship game, containing the setup and game panels.
  */
 public class MainWindow extends JFrame {
     
-    private JPanel currentPanel;
     private SetupPanel setupPanel;
     private GamePanel gamePanel;
-    private StatusLabel statusLabel;
+    private JLabel statusLabel;
     
     /**
-     * Construtor da janela principal.
+     * Constructor for the main window.
      */
     public MainWindow() {
-        // Configurações da janela
-        setTitle("Batalha Naval em Rede");
+        // Window settings
+        setTitle("Battleship");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null); // Centraliza a janela
+        setSize(900, 600);
+        setMinimumSize(new Dimension(800, 500));
+        setLocationRelativeTo(null); // Center the window
         
-        // Aplica o tema escuro
+        // Apply dark theme
         applyDarkTheme();
         
-        // Inicializa a barra de status
-        statusLabel = new StatusLabel();
+        // Initialize status bar
+        setupStatusBar();
         
-        // Configura o layout da janela
+        // Configure window layout
         setLayout(new BorderLayout());
-        add(statusLabel, BorderLayout.SOUTH);
         
-        // Inicializa os painéis (inicialmente mostra o setup)
+        // Initialize panels (initially shows setup)
         setupPanel = new SetupPanel(this);
         gamePanel = new GamePanel(this);
         
-        // Mostra o painel de configuração inicial
+        // Show the initial setup panel
         showSetupPanel();
         
-        // Configura o fechamento da janela
+        // Configure window closing
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Lógica para finalizar conexões de rede
-                System.out.println("Fechando aplicação e conexões...");
+                // Logic to close network connections
+                System.out.println("Closing application...");
+                System.exit(0);
             }
         });
     }
     
     /**
-     * Aplica o tema escuro a toda a aplicação.
+     * Applies dark theme to the UI.
      */
     private void applyDarkTheme() {
-        // Cores do tema escuro
-        Color backgroundColor = Color.BLACK;
-        Color foregroundColor = Color.WHITE;
+        // Dark theme colors
+        Color bgColor = Color.BLACK;
+        Color fgColor = Color.WHITE;
         
-        // Aplica as cores ao frame principal
-        getContentPane().setBackground(backgroundColor);
+        // Apply colors to main frame
+        this.getContentPane().setBackground(bgColor);
         
-        // Configura o Look and Feel para ter cores escuras
+        // Configure Look and Feel to have dark colors
         try {
-            // Usa o look and feel do sistema
+            // Use system look and feel
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             
-            // Configura cores padrão para componentes
-            UIManager.put("Panel.background", backgroundColor);
-            UIManager.put("Panel.foreground", foregroundColor);
-            UIManager.put("Label.foreground", foregroundColor);
+            // Configure default colors for components
+            UIManager.put("Panel.background", bgColor);
+            UIManager.put("Panel.foreground", fgColor);
+            UIManager.put("Label.background", bgColor);
+            UIManager.put("Label.foreground", fgColor);
             UIManager.put("Button.background", new Color(50, 50, 50));
-            UIManager.put("Button.foreground", foregroundColor);
+            UIManager.put("Button.foreground", fgColor);
             UIManager.put("ComboBox.background", new Color(50, 50, 50));
-            UIManager.put("ComboBox.foreground", foregroundColor);
-            UIManager.put("ComboBox.selectionBackground", new Color(80, 80, 80));
-            UIManager.put("ComboBox.selectionForeground", foregroundColor);
-            UIManager.put("RadioButton.background", backgroundColor);
-            UIManager.put("RadioButton.foreground", foregroundColor);
-            UIManager.put("OptionPane.background", backgroundColor);
-            UIManager.put("OptionPane.foreground", foregroundColor);
-            UIManager.put("OptionPane.messageForeground", foregroundColor);
+            UIManager.put("ComboBox.foreground", fgColor);
+            UIManager.put("ScrollPane.background", bgColor);
+            UIManager.put("TextArea.background", new Color(30, 30, 30));
+            UIManager.put("TextArea.foreground", fgColor);
+            UIManager.put("TextField.background", new Color(30, 30, 30));
+            UIManager.put("TextField.foreground", fgColor);
+            UIManager.put("List.background", new Color(30, 30, 30));
+            UIManager.put("List.foreground", fgColor);
+            
+            SwingUtilities.updateComponentTreeUI(this);
         } catch (Exception e) {
-            System.err.println("Erro ao configurar Look and Feel: " + e.getMessage());
+            System.err.println("Failed to set look and feel: " + e.getMessage());
         }
     }
     
     /**
-     * Mostra o painel de configuração (posicionamento dos navios).
+     * Sets up the status bar.
      */
-    public void showSetupPanel() {
-        if (currentPanel != null) {
-            remove(currentPanel);
-        }
-        
-        add(setupPanel, BorderLayout.CENTER);
-        currentPanel = setupPanel;
-        
-        updateStatusMessage("Posicione seus navios no tabuleiro.");
-        revalidate();
-        repaint();
+    private void setupStatusBar() {
+        statusLabel = new JLabel("Welcome to Battleship! Position your ships on the board.");
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        add(statusLabel, BorderLayout.SOUTH);
     }
     
     /**
-     * Mostra o painel de jogo (fase de ataque).
-     */
-    public void showGamePanel() {
-        if (currentPanel != null) {
-            remove(currentPanel);
-        }
-        
-        // Passa o tabuleiro configurado pelo jogador para o GamePanel
-        gamePanel.setPlayerBoard(setupPanel.getPlayerBoard());
-        // TODO: Inicializar o tabuleiro do oponente aqui (quando a rede for implementada)
-        // gamePanel.setOpponentBoard(new Board(Constants.BOARD_SIZE)); 
-        
-        add(gamePanel, BorderLayout.CENTER);
-        currentPanel = gamePanel;
-        
-        updateStatusMessage("Jogo iniciado. Aguarde sua vez para atacar.");
-        revalidate();
-        repaint();
-    }
-    
-    /**
-     * Atualiza a mensagem na barra de status.
-     * @param message Mensagem a ser exibida.
+     * Updates the status message in the status bar.
+     * 
+     * @param message Message to display
      */
     public void updateStatusMessage(String message) {
-        statusLabel.updateMessage(message);
+        statusLabel.setText(message);
     }
     
     /**
-     * Método principal para teste da interface.
-     * @param args Argumentos de linha de comando.
+     * Shows the setup panel.
+     */
+    public void showSetupPanel() {
+        getContentPane().removeAll();
+        add(statusLabel, BorderLayout.SOUTH);
+        add(setupPanel, BorderLayout.CENTER);
+        
+        updateStatusMessage("Position your ships on the board.");
+        validate();
+        repaint();
+    }
+    
+    /**
+     * Shows the game panel and passes the player's configured board.
+     */
+    public void showGamePanel() {
+        // Pass the board configured by the player to the GamePanel
+        Board playerBoard = setupPanel.getPlayerBoard();
+        gamePanel.setPlayerBoard(playerBoard);
+        
+        // TODO: Initialize opponent's board here (when network is implemented)
+        // gamePanel.setOpponentBoard(new Board(Constants.BOARD_SIZE));
+        
+        getContentPane().removeAll();
+        add(statusLabel, BorderLayout.SOUTH);
+        add(gamePanel, BorderLayout.CENTER);
+        
+        updateStatusMessage("Game started! Attack the opponent's board.");
+        validate();
+        repaint();
+    }
+    
+    /**
+     * Main method for testing the interface.
+     * @param args Command line arguments.
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

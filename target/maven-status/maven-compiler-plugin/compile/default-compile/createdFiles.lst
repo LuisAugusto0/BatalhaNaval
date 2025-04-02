@@ -1,5 +1,6 @@
 com/batalhanaval/ui/MainWindow.class
 com/batalhanaval/App.class
+com/batalhanaval/ui/BoardPanel$2.class
 com/batalhanaval/ui/MainWindow$1.class
 com/batalhanaval/core/Position.class
 com/batalhanaval/core/GameState.class
