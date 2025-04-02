@@ -24,11 +24,11 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 
 ### **Funcionalidades Obrigatórias (Checklist)**
 
-#### **[ ] Interface Java Swing (Cliente e Servidor)**
-- [ ] Tela para posicionar navios
-- [ ] Tela para atacar o oponente
-- [ ] Indicador de turno e mensagens de status
-- [ ] Botões e feedback visual para jogadas e resultados
+#### **[~] Interface Java Swing (Cliente e Servidor)**
+- [x] Tela para posicionar navios
+- [x] Tela para atacar o oponente
+- [x] Indicador de turno e mensagens de status
+- [x] Botões e feedback visual para jogadas e resultados
 
 #### **[ ] TCP (Jogo)**
 - [ ] Cliente envia jogadas
@@ -90,8 +90,8 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 ---
 
 ### **Etapas de Desenvolvimento (Sugestão)**
-1. [X] Desenvolver lógica do jogo localmente (localhost)
-2. [ ] Criar interface Swing
+1. [x] Desenvolver lógica do jogo localmente (localhost)
+2. [x] Criar interface Swing
 3. [ ] Implementar comunicação TCP
 4. [ ] Adicionar comunicação UDP
 5. [ ] Implementar multithreading
@@ -104,7 +104,7 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 ---
 
 ### **Entregas**
-- [X] Código-fonte Java (parcial - lógica do jogo implementada)
+- [x] Código-fonte Java (parcial - lógica do jogo e interface gráfica)
 - [ ] Projeto da rede no Cisco Packet Tracer
 - [ ] Relatório de desenvolvimento com:
   - Objetivo
@@ -114,3 +114,17 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
   - Desafios enfrentados
 - [ ] Capturas do Wireshark
 - [ ] Vídeo assíncrono ou apresentação síncrona
+
+---
+
+### **Funcionalidades Implementadas na Interface Gráfica**
+- [x] Tela de configuração (SetupPanel) para posicionar navios
+- [x] Tela de jogo (GamePanel) para atacar o oponente
+- [x] Simulação de oponente (jogador contra máquina)
+- [x] Representação visual de acertos e erros (vermelho e azul)
+- [x] Linhas de orientação em acertos para indicar direção do navio
+- [x] Painel de status para visualizar condição dos navios
+- [x] Modo de depuração (DEBUG_MODE) para visualizar navios inimigos
+- [x] Sistema de turnos (jogador e oponente)
+- [x] Verificação de condições de vitória/derrota
+- [x] Botão de rendição com confirmação

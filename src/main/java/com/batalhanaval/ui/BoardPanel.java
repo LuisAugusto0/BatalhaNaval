@@ -26,6 +26,7 @@ public class BoardPanel extends JPanel {
     private final int BOARD_PIXEL_SIZE = GRID_SIZE * CELL_SIZE;
     
     private final int LINE_THICKNESS = 4; // Thickness of the orientation line
+    private final int COORDINATE_MARGIN = 20; // Margin for drawing coordinates
     
     // Panel components
     private JPanel boardPanel;
@@ -40,6 +41,7 @@ public class BoardPanel extends JPanel {
     private final Color ORIENTATION_LINE_COLOR = Color.BLACK; // Color for the orientation line
     private final Color ALIVE_COLOR = new Color(0, 180, 0); // Green for alive ships
     private final Color SUNK_COLOR = new Color(180, 0, 0);  // Red for sunk ships
+    private final Color COORD_COLOR = new Color(150, 200, 255); // Light blue for coordinates
     
     /**
      * Constructor for the board panel.
@@ -68,7 +70,9 @@ public class BoardPanel extends JPanel {
             }
         };
         
-        boardPanel.setPreferredSize(new Dimension(BOARD_PIXEL_SIZE, BOARD_PIXEL_SIZE));
+        // Adding margins for coordinates
+        int panelSize = BOARD_PIXEL_SIZE + COORDINATE_MARGIN * 2;
+        boardPanel.setPreferredSize(new Dimension(panelSize, panelSize));
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         boardPanel.setBackground(Color.BLACK);
         
@@ -77,8 +81,9 @@ public class BoardPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (clickHandler != null) {
-                    int col = e.getX() / CELL_SIZE;
-                    int row = e.getY() / CELL_SIZE;
+                    // Adjust coordinates to account for the margin
+                    int col = (e.getX() - COORDINATE_MARGIN) / CELL_SIZE;
+                    int row = (e.getY() - COORDINATE_MARGIN) / CELL_SIZE;
                     
                     if (col >= 0 && col < GRID_SIZE && row >= 0 && row < GRID_SIZE) {
                         clickHandler.accept(row, col);
@@ -171,11 +176,11 @@ public class BoardPanel extends JPanel {
         // Enable anti-aliasing
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
+        // Draw coordinates before the grid
+        drawCoordinates(g);
+        
         // Draw the grid and cells
         drawGrid(g);
-        
-        // Draw coordinates
-        drawCoordinates(g);
         
         // Draw ships
         if (!isOpponentBoard) {
@@ -196,7 +201,12 @@ public class BoardPanel extends JPanel {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 g.setColor(WATER_COLOR);
-                g.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 1, CELL_SIZE - 1);
+                g.fillRect(
+                    col * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    row * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    CELL_SIZE - 1, 
+                    CELL_SIZE - 1
+                );
             }
         }
         
@@ -205,12 +215,22 @@ public class BoardPanel extends JPanel {
         
         // Horizontal lines
         for (int row = 0; row <= GRID_SIZE; row++) {
-            g.drawLine(0, row * CELL_SIZE, BOARD_PIXEL_SIZE, row * CELL_SIZE);
+            g.drawLine(
+                COORDINATE_MARGIN, 
+                row * CELL_SIZE + COORDINATE_MARGIN, 
+                BOARD_PIXEL_SIZE + COORDINATE_MARGIN, 
+                row * CELL_SIZE + COORDINATE_MARGIN
+            );
         }
         
         // Vertical lines
         for (int col = 0; col <= GRID_SIZE; col++) {
-            g.drawLine(col * CELL_SIZE, 0, col * CELL_SIZE, BOARD_PIXEL_SIZE);
+            g.drawLine(
+                col * CELL_SIZE + COORDINATE_MARGIN, 
+                COORDINATE_MARGIN, 
+                col * CELL_SIZE + COORDINATE_MARGIN, 
+                BOARD_PIXEL_SIZE + COORDINATE_MARGIN
+            );
         }
     }
     
@@ -218,22 +238,34 @@ public class BoardPanel extends JPanel {
      * Draws the coordinates (A-J, 1-10).
      */
     private void drawCoordinates(Graphics2D g) {
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 12));
+        g.setFont(new Font("Arial", Font.BOLD, 14));
         
-        // Horizontal coordinates (A-J)
+        // Draw column labels (A-J)
+        g.setColor(COORD_COLOR);
         for (int col = 0; col < GRID_SIZE; col++) {
             char letter = (char) ('A' + col);
-            g.drawString(String.valueOf(letter), 
-                         col * CELL_SIZE + CELL_SIZE/2 - 5, 
-                         CELL_SIZE/4);
+            FontMetrics metrics = g.getFontMetrics();
+            int width = metrics.stringWidth(String.valueOf(letter));
+            
+            g.drawString(
+                String.valueOf(letter), 
+                col * CELL_SIZE + COORDINATE_MARGIN + (CELL_SIZE - width) / 2, 
+                COORDINATE_MARGIN - 5
+            );
         }
         
-        // Vertical coordinates (1-10)
+        // Draw row labels (1-10)
         for (int row = 0; row < GRID_SIZE; row++) {
-            g.drawString(String.valueOf(row + 1), 
-                         5, 
-                         row * CELL_SIZE + CELL_SIZE/2 + 5);
+            String number = String.valueOf(row + 1);
+            FontMetrics metrics = g.getFontMetrics();
+            int width = metrics.stringWidth(number);
+            int height = metrics.getHeight();
+            
+            g.drawString(
+                number, 
+                COORDINATE_MARGIN - width - 5, 
+                row * CELL_SIZE + COORDINATE_MARGIN + (CELL_SIZE + height) / 2 - 2
+            );
         }
     }
     
@@ -252,7 +284,12 @@ public class BoardPanel extends JPanel {
                 
                 // Only draw ship parts that haven't been hit
                 if (cellState != Constants.HIT && cellState != Constants.SUNK) {
-                    g.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 1, CELL_SIZE - 1);
+                    g.fillRect(
+                        col * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                        row * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                        CELL_SIZE - 1, 
+                        CELL_SIZE - 1
+                    );
                 }
             }
         }
@@ -274,7 +311,12 @@ public class BoardPanel extends JPanel {
                 // Only draw ship parts that haven't been hit
                 // (doesn't overlay red hits or blue misses)
                 if (cellState != Constants.HIT && cellState != Constants.SUNK && cellState != Constants.MISS) {
-                    g.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 1, CELL_SIZE - 1);
+                    g.fillRect(
+                        col * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                        row * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                        CELL_SIZE - 1, 
+                        CELL_SIZE - 1
+                    );
                 }
             }
         }
@@ -293,11 +335,21 @@ public class BoardPanel extends JPanel {
             if (cellState == Constants.MISS) {
                 // Misses: blue square (water hit)
                 g.setColor(MISS_COLOR);
-                g.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 1, CELL_SIZE - 1);
+                g.fillRect(
+                    col * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    row * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    CELL_SIZE - 1, 
+                    CELL_SIZE - 1
+                );
             } else if (cellState == Constants.HIT || cellState == Constants.SUNK) {
                 // Hits: red square (ship hit)
                 g.setColor(HIT_COLOR);
-                g.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 1, CELL_SIZE - 1);
+                g.fillRect(
+                    col * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    row * CELL_SIZE + COORDINATE_MARGIN + 1, 
+                    CELL_SIZE - 1, 
+                    CELL_SIZE - 1
+                );
                 
                 // Draw orientation line based on ship's orientation
                 Ship hitShip = findShipAtPosition(pos);
@@ -305,8 +357,8 @@ public class BoardPanel extends JPanel {
                     g.setColor(ORIENTATION_LINE_COLOR);
                     g.setStroke(new BasicStroke(LINE_THICKNESS));
                     
-                    int x = col * CELL_SIZE + 1;
-                    int y = row * CELL_SIZE + 1;
+                    int x = col * CELL_SIZE + COORDINATE_MARGIN + 1;
+                    int y = row * CELL_SIZE + COORDINATE_MARGIN + 1;
                     int width = CELL_SIZE - 1;
                     int height = CELL_SIZE - 1;
                     
@@ -350,4 +402,4 @@ public class BoardPanel extends JPanel {
             updateStatusPanel();
         }
     }
-} 
+}

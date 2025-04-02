@@ -24,7 +24,11 @@ BatalhaNaval/
 │   │   ├── Position.java      # Posição no tabuleiro
 │   │   └── GameState.java     # Estado do jogo
 │   ├── network/               # Comunicação em rede (a implementar)
-│   └── ui/                    # Interface gráfica (a implementar)
+│   └── ui/                    # Interface gráfica
+│       ├── MainWindow.java    # Janela principal
+│       ├── GamePanel.java     # Painel de jogo
+│       ├── BoardPanel.java    # Painel do tabuleiro
+│       └── SetupPanel.java    # Painel de configuração
 └── src/test/                  # Testes unitários
 ```
 
@@ -40,15 +44,35 @@ BatalhaNaval/
    mvn clean test
    ```
 
-3. Execute a demonstração da lógica do jogo (sem interface gráfica)
+3. Execute o jogo com interface gráfica
    ```
-   mvn exec:java -Dexec.mainClass="com.batalhanaval.App"
+   mvn clean compile exec:java -Dexec.mainClass="com.batalhanaval.App"
    ```
 
 ## Funcionalidades Implementadas
 - [x] Lógica central do jogo (tabuleiros, navios, regras)
 - [x] Testes unitários para a lógica central
-- [ ] Interface gráfica com Java Swing
+- [x] Interface gráfica com Java Swing
+  - [x] Tela de configuração para posicionar navios
+  - [x] Tela de jogo para atacar o oponente
+  - [x] Modo de depuração (visualização de navios inimigos)
+  - [x] Indicadores visuais de acertos/erros
+  - [x] Painel de status para visualizar condição dos navios
+  - [x] Linhas de orientação em acertos para mostrar direção do navio
+- [x] Simulação do oponente (jogo local sem rede)
 - [ ] Comunicação em rede via TCP/UDP
 - [ ] Multithreading para UI e comunicação
 - [ ] Configuração em rede (Packet Tracer)
+
+## Configuração do Modo de Depuração
+Para ativar o modo de depuração e ver os navios do oponente em amarelo, altere a constante `DEBUG_MODE` para `true` na classe `App.java`:
+
+```java
+public static final boolean DEBUG_MODE = true;
+```
+
+## Próximos Passos
+1. Implementar comunicação em rede usando TCP para jogadas e UDP para notificações
+2. Adicionar suporte para multithreading
+3. Configurar a rede no Cisco Packet Tracer
+4. Analisar o tráfego com Wireshark
