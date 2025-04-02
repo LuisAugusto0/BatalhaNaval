@@ -4,8 +4,12 @@ Um jogo de batalha naval em Java Swing com comunicação TCP/UDP e multithreadin
 ## Descrição
 Este projeto implementa o clássico jogo de Batalha Naval com uma interface gráfica em Java Swing e comunicação em rede, permitindo que dois jogadores disputem partidas remotamente. O jogo utiliza comunicação TCP para as jogadas principais e UDP para notificações assíncronas, além de implementar conceitos de multithreading para gerenciar UI e comunicação de rede simultaneamente.
 
+## Pré-requisitos
+- Java 17+ (Testado com OpenJDK 17)
+- Maven 3.6+ (Gerenciamento de dependências)
+
 ## Tecnologias Utilizadas
-- Java 11+
+- Java 17+
 - Java Swing (Interface gráfica)
 - Sockets TCP/UDP (Comunicação em rede)
 - Multithreading
@@ -36,21 +40,88 @@ BatalhaNaval/
 └── src/test/                  # Testes unitários
 ```
 
+## Como Instalar
+
+### 1. Instalar Java (caso não tenha)
+#### No Ubuntu/Debian:
+```
+sudo apt update
+sudo apt install openjdk-17-jdk
+```
+
+#### No Windows:
+- Baixe o OpenJDK 17 do site oficial ou use o Eclipse Temurin: https://adoptium.net/
+- Instale e configure a variável de ambiente JAVA_HOME
+
+#### No macOS:
+```
+brew install openjdk@17
+```
+
+### 2. Instalar Maven (caso não tenha)
+#### No Ubuntu/Debian:
+```
+sudo apt install maven
+```
+
+#### No Windows:
+- Baixe o Maven do site oficial: https://maven.apache.org/download.cgi
+- Extraia e configure a variável de ambiente M2_HOME e adicione ao PATH
+
+#### No macOS:
+```
+brew install maven
+```
+
+### 3. Verificar Instalação
+Verifique se Java e Maven estão corretamente instalados:
+```
+java -version
+mvn -version
+```
+
 ## Como Executar
 1. Clone o repositório
    ```
-   git clone https://github.com/seu-usuario/BatalhaNaval.git
+   git clone https://github.com/rafaelfleury/BatalhaNaval.git
    cd BatalhaNaval
    ```
 
-2. Compile e execute os testes
+2. Compile o projeto
    ```
-   mvn clean test
+   mvn clean compile
    ```
 
-3. Execute o jogo com interface gráfica
+3. Execute os testes (opcional)
+   ```
+   mvn test
+   ```
+
+4. Execute o jogo com interface gráfica
+   ```
+   mvn exec:java -Dexec.mainClass="com.batalhanaval.App"
+   ```
+
+   Ou alternativamente:
    ```
    mvn clean compile exec:java -Dexec.mainClass="com.batalhanaval.App"
+   ```
+
+### Solução de Problemas
+
+#### Módulo GTK ausente (Linux)
+Se você receber uma mensagem como "Failed to load module 'canberra-gtk-module'", isso é apenas um aviso não crítico relacionado à interface gráfica e não impede a execução do jogo. Para resolver:
+
+```
+sudo apt install libcanberra-gtk-module
+```
+
+#### Erros de compilação
+Se encontrar erros de compilação, verifique:
+1. Se você está usando Java 17 ou superior
+2. Se todas as dependências do Maven foram corretamente resolvidas
+   ```
+   mvn dependency:resolve
    ```
 
 ## Funcionalidades Implementadas
@@ -89,6 +160,14 @@ Para ativar o modo de depuração e ver os navios do oponente em amarelo, altere
 ```java
 public static final boolean DEBUG_MODE = true;
 ```
+
+## Modo Online e Configuração de Rede
+Para jogar o modo online:
+1. O primeiro jogador deve selecionar a opção "Host Game" e definir a porta (padrão: 6969)
+2. O segundo jogador deve selecionar "Join Game" e fornecer o IP do host e a porta
+3. Certifique-se de que:
+   - Seu firewall permite conexões nas portas 6969 (TCP) e 6970 (UDP)
+   - Se estiver em redes diferentes, configure o encaminhamento de porta no roteador
 
 ## Próximos Passos
 1. Implementar a lógica completa de jogo em rede
