@@ -233,13 +233,15 @@ public class GamePanel extends JPanel {
         // Switch turns
         setPlayerTurn(false);
         
-        // Simulate the opponent's turn (will be implemented later)
-        try {
-            Thread.sleep(1500); // Simulate a small delay
-            simulateOpponentTurn();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // Use SwingUtilities.invokeLater to ensure the UI updates before the opponent's turn
+        SwingUtilities.invokeLater(() -> {
+            // Add a small delay for better user experience
+            Timer timer = new Timer(1000, e -> {
+                simulateOpponentTurn();
+            });
+            timer.setRepeats(false);
+            timer.start();
+        });
     }
     
     /**

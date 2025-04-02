@@ -350,28 +350,6 @@ public class BoardPanel extends JPanel {
                     CELL_SIZE - 1, 
                     CELL_SIZE - 1
                 );
-                
-                // Draw orientation line based on ship's orientation
-                Ship hitShip = findShipAtPosition(pos);
-                if (hitShip != null) {
-                    g.setColor(ORIENTATION_LINE_COLOR);
-                    g.setStroke(new BasicStroke(LINE_THICKNESS));
-                    
-                    int x = col * CELL_SIZE + COORDINATE_MARGIN + 1;
-                    int y = row * CELL_SIZE + COORDINATE_MARGIN + 1;
-                    int width = CELL_SIZE - 1;
-                    int height = CELL_SIZE - 1;
-                    
-                    if (hitShip.isVertical()) {
-                        // Vertical ship - draw vertical line (down the middle)
-                        g.drawLine(x + width/2, y, x + width/2, y + height);
-                    } else {
-                        // Horizontal ship - draw horizontal line (across the middle)
-                        g.drawLine(x, y + height/2, x + width, y + height/2);
-                    }
-                    // Reset stroke to default
-                    g.setStroke(new BasicStroke(1));
-                }
             }
         }
     }
