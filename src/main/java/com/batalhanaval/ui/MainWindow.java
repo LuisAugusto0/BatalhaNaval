@@ -7,14 +7,33 @@ import java.awt.event.WindowEvent;
 
 import com.batalhanaval.Constants;
 import com.batalhanaval.core.Board;
+import com.batalhanaval.network.NetworkManager;
 
 /**
  * Main window of the Battleship game, containing the setup and game panels.
  */
 public class MainWindow extends JFrame {
     
+    // Panel identifiers for CardLayout
+    private static final String MAIN_MENU_PANEL = "mainMenu";
+    private static final String SETUP_PANEL = "setup";
+    private static final String GAME_PANEL = "game";
+    private static final String ONLINE_SETUP_PANEL = "onlineSetup";
+    
+    // Panels
+    private MainMenuPanel mainMenuPanel;
     private SetupPanel setupPanel;
     private GamePanel gamePanel;
+    private OnlineSetupPanel onlineSetupPanel;
+    
+    // Layout manager
+    private CardLayout cardLayout;
+    private JPanel contentPanel;
+    
+    // Network manager
+    private NetworkManager networkManager;
+    
+    // Status bar
     private JLabel statusLabel;
     
     /**
@@ -34,21 +53,42 @@ public class MainWindow extends JFrame {
         // Initialize status bar
         setupStatusBar();
         
-        // Configure window layout
-        setLayout(new BorderLayout());
+        // Initialize network manager
+        networkManager = new NetworkManager();
         
-        // Initialize panels (initially shows setup)
+        // Configure window layout
+        cardLayout = new CardLayout();
+        contentPanel = new JPanel(cardLayout);
+        contentPanel.setBackground(Color.BLACK);
+        
+        // Initialize panels
+        mainMenuPanel = new MainMenuPanel(this);
         setupPanel = new SetupPanel(this);
         gamePanel = new GamePanel(this);
+        onlineSetupPanel = new OnlineSetupPanel(this, networkManager);
         
-        // Show the initial setup panel
-        showSetupPanel();
+        // Add panels to card layout
+        contentPanel.add(mainMenuPanel, MAIN_MENU_PANEL);
+        contentPanel.add(setupPanel, SETUP_PANEL);
+        contentPanel.add(gamePanel, GAME_PANEL);
+        contentPanel.add(onlineSetupPanel, ONLINE_SETUP_PANEL);
+        
+        // Add panels to main layout
+        setLayout(new BorderLayout());
+        add(contentPanel, BorderLayout.CENTER);
+        add(statusLabel, BorderLayout.SOUTH);
+        
+        // Show the initial main menu panel
+        showMainMenuPanel();
         
         // Configure window closing
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Logic to close network connections
+                // Clean up network resources
+                if (networkManager != null) {
+                    networkManager.stopNetwork();
+                }
                 System.out.println("Closing application...");
                 System.exit(0);
             }
@@ -98,10 +138,9 @@ public class MainWindow extends JFrame {
      * Sets up the status bar.
      */
     private void setupStatusBar() {
-        statusLabel = new JLabel("Welcome to Battleship! Position your ships on the board.");
+        statusLabel = new JLabel("Welcome to Battleship!");
         statusLabel.setForeground(Color.WHITE);
         statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        add(statusLabel, BorderLayout.SOUTH);
     }
     
     /**
@@ -114,16 +153,27 @@ public class MainWindow extends JFrame {
     }
     
     /**
+     * Shows the main menu panel.
+     */
+    public void showMainMenuPanel() {
+        cardLayout.show(contentPanel, MAIN_MENU_PANEL);
+        updateStatusMessage("Welcome to Battleship! Choose a game mode.");
+    }
+    
+    /**
      * Shows the setup panel.
      */
     public void showSetupPanel() {
-        getContentPane().removeAll();
-        add(statusLabel, BorderLayout.SOUTH);
-        add(setupPanel, BorderLayout.CENTER);
-        
+        cardLayout.show(contentPanel, SETUP_PANEL);
         updateStatusMessage("Position your ships on the board.");
-        validate();
-        repaint();
+    }
+    
+    /**
+     * Shows the online setup panel.
+     */
+    public void showOnlineSetupPanel() {
+        cardLayout.show(contentPanel, ONLINE_SETUP_PANEL);
+        updateStatusMessage("Set up network connection for online play.");
     }
     
     /**
@@ -134,16 +184,9 @@ public class MainWindow extends JFrame {
         Board playerBoard = setupPanel.getPlayerBoard();
         gamePanel.setPlayerBoard(playerBoard);
         
-        // TODO: Initialize opponent's board here (when network is implemented)
-        // gamePanel.setOpponentBoard(new Board(Constants.BOARD_SIZE));
-        
-        getContentPane().removeAll();
-        add(statusLabel, BorderLayout.SOUTH);
-        add(gamePanel, BorderLayout.CENTER);
-        
+        // Show the game panel
+        cardLayout.show(contentPanel, GAME_PANEL);
         updateStatusMessage("Game started! Attack the opponent's board.");
-        validate();
-        repaint();
     }
     
     /**
@@ -156,4 +199,4 @@ public class MainWindow extends JFrame {
             window.setVisible(true);
         });
     }
-} 
+}

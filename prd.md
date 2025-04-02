@@ -24,31 +24,31 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 
 ### **Funcionalidades Obrigatórias (Checklist)**
 
-#### **[~] Interface Java Swing (Cliente e Servidor)**
+#### **[✓] Interface Java Swing (Cliente e Servidor)**
 - [x] Tela para posicionar navios
 - [x] Tela para atacar o oponente
 - [x] Indicador de turno e mensagens de status
 - [x] Botões e feedback visual para jogadas e resultados
 
-#### **[ ] TCP (Jogo)**
-- [ ] Cliente envia jogadas
-- [ ] Servidor processa e responde ("Hit", "Miss", "Sunk")
+#### **[~] TCP (Jogo)**
+- [~] Cliente envia jogadas
+- [~] Servidor processa e responde ("Hit", "Miss", "Sunk")
 - [ ] Sincronização de turnos entre os jogadores
 - [ ] Mensagens de início e fim de partida
 
-#### **[ ] UDP (Notificações)**
-- [ ] Mensagens assíncronas (ex: desconexão, latência, tempo ocioso)
-- [ ] Escuta em paralelo ao TCP sem bloquear o jogo
+#### **[~] UDP (Notificações)**
+- [~] Mensagens assíncronas (ex: desconexão, latência, tempo ocioso)
+- [x] Escuta em paralelo ao TCP sem bloquear o jogo
 
-#### **[ ] Multithreading**
-- [ ] Thread da interface gráfica
-- [ ] Thread para escutar mensagens TCP
-- [ ] Thread separada para escutar mensagens UDP
-- [ ] No servidor: thread principal e threads por cliente (caso multi)
+#### **[✓] Multithreading**
+- [x] Thread da interface gráfica
+- [x] Thread para escutar mensagens TCP
+- [x] Thread separada para escutar mensagens UDP
+- [x] No servidor: thread principal e threads por cliente (caso multi)
 
-#### **[ ] Escolha dinâmica entre Cliente e Servidor**
-- [ ] Jogador pode criar sala (torna-se servidor)
-- [ ] Jogador pode entrar na sala (atua como cliente)
+#### **[✓] Escolha dinâmica entre Cliente e Servidor**
+- [x] Jogador pode criar sala (torna-se servidor)
+- [x] Jogador pode entrar na sala (atua como cliente)
 - [ ] O servidor obrigatoriamente roda no PC2 (R3)
 - [ ] **Servidor também é um jogador completo**, com todas as funcionalidades de um cliente:
   - Posicionamento de navios
@@ -89,12 +89,12 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 
 ---
 
-### **Etapas de Desenvolvimento (Sugestão)**
+### **Etapas de Desenvolvimento (Progresso)**
 1. [x] Desenvolver lógica do jogo localmente (localhost)
 2. [x] Criar interface Swing
-3. [ ] Implementar comunicação TCP
-4. [ ] Adicionar comunicação UDP
-5. [ ] Implementar multithreading
+3. [~] Implementar comunicação TCP
+4. [~] Adicionar comunicação UDP
+5. [x] Implementar multithreading
 6. [ ] Testar funcionalidade em rede local (LAN)
 7. [ ] Reproduzir a rede no Cisco Packet Tracer
 8. [ ] Configurar IPs, roteadores e redirecionamento
@@ -105,6 +105,7 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 
 ### **Entregas**
 - [x] Código-fonte Java (parcial - lógica do jogo e interface gráfica)
+- [~] Código-fonte Java (parcial - comunicação TCP/UDP e multithreading)
 - [ ] Projeto da rede no Cisco Packet Tracer
 - [ ] Relatório de desenvolvimento com:
   - Objetivo
@@ -118,7 +119,9 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 ---
 
 ### **Funcionalidades Implementadas na Interface Gráfica**
+- [x] Tela de início com escolha entre jogo local ou online
 - [x] Tela de configuração (SetupPanel) para posicionar navios
+- [x] Tela de configuração de rede (OnlineSetupPanel)
 - [x] Tela de jogo (GamePanel) para atacar o oponente
 - [x] Simulação de oponente (jogador contra máquina)
 - [x] Representação visual de acertos e erros (vermelho e azul)
@@ -128,3 +131,14 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 - [x] Sistema de turnos (jogador e oponente)
 - [x] Verificação de condições de vitória/derrota
 - [x] Botão de rendição com confirmação
+
+### **Funcionalidades Implementadas na Comunicação de Rede**
+- [x] Estabelecimento de conexão TCP entre cliente e servidor
+- [x] Escuta de mensagens TCP em thread dedicada
+- [x] Configuração dinâmica de portas UDP
+- [x] Escuta de mensagens UDP em thread dedicada
+- [x] Troca de informações de conexão entre cliente e servidor
+- [x] Interface para testes de comunicação UDP
+- [ ] Protocolo de comunicação para jogadas
+- [ ] Sincronização de tabuleiros via rede
+- [ ] Notificações de status de jogo via UDP

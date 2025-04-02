@@ -1,13 +1,16 @@
 com/batalhanaval/ui/MainWindow.class
 com/batalhanaval/App.class
 com/batalhanaval/ui/BoardPanel$2.class
+com/batalhanaval/ui/OnlineSetupPanel.class
 com/batalhanaval/ui/MainWindow$1.class
 com/batalhanaval/core/Position.class
 com/batalhanaval/core/GameState.class
 com/batalhanaval/core/Ship.class
 com/batalhanaval/Constants.class
 com/batalhanaval/ui/GamePanel.class
+com/batalhanaval/ui/MainMenuPanel.class
 com/batalhanaval/ui/BoardPanel.class
+com/batalhanaval/network/NetworkManager.class
 com/batalhanaval/core/Board.class
 com/batalhanaval/ui/SetupPanel.class
 com/batalhanaval/ui/BoardPanel$1.class
