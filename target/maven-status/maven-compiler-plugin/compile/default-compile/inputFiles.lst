@@ -8,7 +8,10 @@
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/App.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/GamePanel.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/BoardPanel.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/GameInfoManager.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/Board.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/OnlineSetupPanel.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/HoverManager.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/SetupPanel.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/GameState.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/GameInfoExample.java

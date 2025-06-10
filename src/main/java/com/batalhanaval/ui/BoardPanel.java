@@ -20,6 +20,11 @@ public class BoardPanel extends JPanel {
     private Board board;
     private boolean isOpponentBoard;
     private BiConsumer<Integer, Integer> clickHandler;
+    private BiConsumer<Integer, Integer> hoverHandler;
+    
+    // Hover tracking
+    private Position currentHoverPosition;
+    private Position opponentHoverPosition;
     
     private final int CELL_SIZE = 30;
     private final int GRID_SIZE = Constants.BOARD_SIZE;
@@ -37,11 +42,13 @@ public class BoardPanel extends JPanel {
     private final Color SHIP_COLOR = Color.DARK_GRAY;     // Ship (visible on player's board)
     private final Color MISS_COLOR = Color.BLUE;          // Miss (water hit)
     private final Color HIT_COLOR = Color.RED;            // Hit (ship hit)
-    private final Color DEBUG_SHIP_COLOR = Color.YELLOW;  // Color to reveal opponent's ships in debug mode
+    private final Color DEBUG_SHIP_COLOR = new Color(0, 200, 0);  // Green color to reveal opponent's ships in debug mode
     private final Color ORIENTATION_LINE_COLOR = Color.BLACK; // Color for the orientation line
     private final Color ALIVE_COLOR = new Color(0, 180, 0); // Green for alive ships
     private final Color SUNK_COLOR = new Color(180, 0, 0);  // Red for sunk ships
     private final Color COORD_COLOR = new Color(150, 200, 255); // Light blue for coordinates
+    private final Color HOVER_COLOR = new Color(255, 255, 0, 150); // Yellow transparent for hover (more visible)
+    private final Color OPPONENT_HOVER_COLOR = new Color(255, 165, 0, 120); // Orange transparent for opponent hover
     
     /**
      * Constructor for the board panel.
@@ -76,8 +83,8 @@ public class BoardPanel extends JPanel {
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         boardPanel.setBackground(Color.BLACK);
         
-        // Add mouse listener to the board panel
-        boardPanel.addMouseListener(new MouseAdapter() {
+        // Add mouse listeners to the board panel
+        MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (clickHandler != null) {
@@ -90,7 +97,44 @@ public class BoardPanel extends JPanel {
                     }
                 }
             }
-        });
+            
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                // Track hover position
+                int col = (e.getX() - COORDINATE_MARGIN) / CELL_SIZE;
+                int row = (e.getY() - COORDINATE_MARGIN) / CELL_SIZE;
+                
+                Position newHoverPosition = null;
+                if (col >= 0 && col < GRID_SIZE && row >= 0 && row < GRID_SIZE) {
+                    newHoverPosition = new Position(row, col);
+                }
+                
+                // Update hover position if it changed
+                if (!java.util.Objects.equals(currentHoverPosition, newHoverPosition)) {
+                    currentHoverPosition = newHoverPosition;
+                    
+                    // Notify hover handler if set
+                    if (hoverHandler != null && currentHoverPosition != null) {
+                        hoverHandler.accept(row, col);
+                    }
+                    
+                    // Repaint to show hover effect
+                    repaint();
+                }
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // Clear hover when mouse leaves the board
+                if (currentHoverPosition != null) {
+                    currentHoverPosition = null;
+                    repaint();
+                }
+            }
+        };
+        
+        boardPanel.addMouseListener(mouseAdapter);
+        boardPanel.addMouseMotionListener(mouseAdapter);
         
         // Create the status panel for ships
         statusPanel = new JPanel();
@@ -112,6 +156,41 @@ public class BoardPanel extends JPanel {
      */
     public void setClickHandler(BiConsumer<Integer, Integer> handler) {
         this.clickHandler = handler;
+    }
+    
+    /**
+     * Sets the handler for hover events on the board.
+     * @param handler Function that receives coordinates (row, column) when hovering
+     */
+    public void setHoverHandler(BiConsumer<Integer, Integer> handler) {
+        this.hoverHandler = handler;
+    }
+    
+    /**
+     * Gets the current hover position on this board.
+     * @return Current hover position or null if not hovering
+     */
+    public Position getCurrentHoverPosition() {
+        return currentHoverPosition;
+    }
+    
+    /**
+     * Sets the opponent's hover position (received via network).
+     * @param position Position where opponent is hovering
+     */
+    public void setOpponentHoverPosition(Position position) {
+        if (!java.util.Objects.equals(this.opponentHoverPosition, position)) {
+            this.opponentHoverPosition = position;
+            repaint();
+        }
+    }
+    
+    /**
+     * Gets the opponent's hover position.
+     * @return Opponent's hover position or null if not hovering
+     */
+    public Position getOpponentHoverPosition() {
+        return opponentHoverPosition;
     }
     
     /**
@@ -191,6 +270,9 @@ public class BoardPanel extends JPanel {
         
         // Draw attacks
         drawAttacks(g);
+        
+        // Draw hover effects
+        drawHoverEffects(g);
     }
     
     /**
@@ -352,6 +434,47 @@ public class BoardPanel extends JPanel {
                 );
             }
         }
+    }
+    
+    /**
+     * Draws hover effects on the board.
+     */
+    private void drawHoverEffects(Graphics2D g) {
+        // Enable alpha blending for transparency
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+        
+        // Draw current player's hover (yellow) - appears on all boards
+        if (currentHoverPosition != null) {
+            int x = currentHoverPosition.getCol() * CELL_SIZE + COORDINATE_MARGIN + 1;
+            int y = currentHoverPosition.getRow() * CELL_SIZE + COORDINATE_MARGIN + 1;
+            int size = CELL_SIZE - 1;
+            
+            // Fill with transparent yellow
+            g.setColor(HOVER_COLOR);
+            g.fillRect(x, y, size, size);
+            
+            // Add a subtle border for better visibility
+            g.setColor(new Color(255, 255, 0, 200)); // More opaque yellow border
+            g.drawRect(x, y, size - 1, size - 1);
+        }
+        
+        // Draw opponent's hover (orange) - only appears on your own board when opponent hovers over it
+        if (!isOpponentBoard && opponentHoverPosition != null) {
+            int x = opponentHoverPosition.getCol() * CELL_SIZE + COORDINATE_MARGIN + 1;
+            int y = opponentHoverPosition.getRow() * CELL_SIZE + COORDINATE_MARGIN + 1;
+            int size = CELL_SIZE - 1;
+            
+            // Fill with transparent orange
+            g.setColor(OPPONENT_HOVER_COLOR);
+            g.fillRect(x, y, size, size);
+            
+            // Add a border for better visibility
+            g.setColor(new Color(255, 165, 0, 180)); // More opaque orange border
+            g.drawRect(x, y, size - 1, size - 1);
+        }
+        
+        // Reset composite
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
     
     /**

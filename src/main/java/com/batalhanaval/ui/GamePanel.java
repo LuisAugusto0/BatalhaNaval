@@ -11,6 +11,8 @@ import com.batalhanaval.Constants;
 import com.batalhanaval.core.Board;
 import com.batalhanaval.core.Position;
 import com.batalhanaval.core.Ship;
+import com.batalhanaval.core.GameState;
+import com.batalhanaval.core.GameInfoManager;
 
 /**
  * Panel for the main game view with both player and opponent boards.
@@ -25,7 +27,18 @@ public class GamePanel extends JPanel {
     private BoardPanel playerBoardPanel;
     private BoardPanel opponentBoardPanel;
     private JPanel controlPanel;
+    private JPanel scoreboardPanel;
     private JButton surrenderButton;
+    
+    // Scoreboard components
+    private JLabel playerScoreLabel;
+    private JLabel opponentScoreLabel;
+    private JLabel playerShipsLabel;
+    private JLabel opponentShipsLabel;
+    
+    // Game info management
+    private GameState gameState;
+    private GameInfoManager gameInfoManager;
     
     private Random random = new Random();
     
@@ -41,6 +54,10 @@ public class GamePanel extends JPanel {
         this.playerBoard = null;
         this.opponentBoard = new Board(Constants.BOARD_SIZE); // Opponent's board
         
+        // Initialize game state and info manager
+        this.gameState = new GameState(Constants.BOARD_SIZE);
+        this.gameInfoManager = new GameInfoManager(gameState);
+        
         // Randomly position opponent's ships
         setupOpponentBoard();
         
@@ -48,9 +65,10 @@ public class GamePanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setBackground(Color.BLACK);
         
-        // Initialize the board panels and control panel
+        // Initialize the board panels, control panel, and scoreboard
         setupBoardPanels();
         setupControlPanel();
+        setupScoreboardPanel();
         
         // Add panels to the main layout
         JPanel boardsPanel = new JPanel(new GridLayout(1, 2, 30, 0));
@@ -58,8 +76,14 @@ public class GamePanel extends JPanel {
         boardsPanel.add(playerBoardPanel);
         boardsPanel.add(opponentBoardPanel);
         
+        // Create right panel with control and scoreboard
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setBackground(Color.BLACK);
+        rightPanel.add(scoreboardPanel, BorderLayout.NORTH);
+        rightPanel.add(controlPanel, BorderLayout.CENTER);
+        
         add(boardsPanel, BorderLayout.CENTER);
-        add(controlPanel, BorderLayout.EAST);
+        add(rightPanel, BorderLayout.EAST);
     }
     
     /**
@@ -176,6 +200,167 @@ public class GamePanel extends JPanel {
     }
     
     /**
+     * Sets up the scoreboard panel with real-time score tracking.
+     */
+    private void setupScoreboardPanel() {
+        scoreboardPanel = new JPanel();
+        scoreboardPanel.setLayout(new BoxLayout(scoreboardPanel, BoxLayout.Y_AXIS));
+        scoreboardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        scoreboardPanel.setPreferredSize(new Dimension(180, 200));
+        scoreboardPanel.setBackground(Color.BLACK);
+        
+        // Title
+        JLabel titleLabel = new JLabel("SCOREBOARD");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(255, 215, 0)); // Gold color
+        scoreboardPanel.add(titleLabel);
+        scoreboardPanel.add(Box.createVerticalStrut(15));
+        
+        // Player score section
+        JLabel playerLabel = new JLabel("PLAYER");
+        playerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playerLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        playerLabel.setForeground(new Color(100, 255, 100)); // Light green
+        scoreboardPanel.add(playerLabel);
+        
+        playerScoreLabel = new JLabel("Score: 0");
+        playerScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playerScoreLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        playerScoreLabel.setForeground(Color.WHITE);
+        scoreboardPanel.add(playerScoreLabel);
+        
+        playerShipsLabel = new JLabel("Ships: 5/5");
+        playerShipsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playerShipsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        playerShipsLabel.setForeground(Color.WHITE);
+        scoreboardPanel.add(playerShipsLabel);
+        
+        scoreboardPanel.add(Box.createVerticalStrut(20));
+        
+        // Opponent score section
+        JLabel opponentLabel = new JLabel("OPPONENT");
+        opponentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        opponentLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        opponentLabel.setForeground(new Color(255, 100, 100)); // Light red
+        scoreboardPanel.add(opponentLabel);
+        
+        opponentScoreLabel = new JLabel("Score: 0");
+        opponentScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        opponentScoreLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        opponentScoreLabel.setForeground(Color.WHITE);
+        scoreboardPanel.add(opponentScoreLabel);
+        
+        opponentShipsLabel = new JLabel("Ships: 5/5");
+        opponentShipsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        opponentShipsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        opponentShipsLabel.setForeground(Color.WHITE);
+        scoreboardPanel.add(opponentShipsLabel);
+        
+        // Initial score update
+        updateScoreboard();
+    }
+    
+    /**
+     * Updates the scoreboard with current game information.
+     */
+    private void updateScoreboard() {
+        if (gameInfoManager == null || playerBoard == null) {
+            return;
+        }
+        
+        // Update game state boards for accurate scoring
+        if (gameState != null) {
+            // We need to sync the boards for accurate scoring
+            // For now, we'll calculate scores based on the current boards directly
+        }
+        
+        // Calculate scores using our scoring system
+        int playerScore = calculatePlayerScore();
+        int opponentScore = calculateOpponentScore();
+        
+        // Count remaining ships
+        int playerShipsAlive = countAliveShips(playerBoard);
+        int opponentShipsAlive = countAliveShips(opponentBoard);
+        int totalShips = playerBoard.getShips().size();
+        
+        // Update labels
+        playerScoreLabel.setText("Score: " + playerScore);
+        opponentScoreLabel.setText("Score: " + opponentScore);
+        playerShipsLabel.setText("Ships: " + playerShipsAlive + "/" + totalShips);
+        opponentShipsLabel.setText("Ships: " + opponentShipsAlive + "/" + totalShips);
+        
+        // Add visual indicators for leading player
+        if (playerScore > opponentScore) {
+            playerScoreLabel.setForeground(new Color(255, 215, 0)); // Gold
+            opponentScoreLabel.setForeground(Color.WHITE);
+        } else if (opponentScore > playerScore) {
+            opponentScoreLabel.setForeground(new Color(255, 215, 0)); // Gold
+            playerScoreLabel.setForeground(Color.WHITE);
+        } else {
+            playerScoreLabel.setForeground(Color.WHITE);
+            opponentScoreLabel.setForeground(Color.WHITE);
+        }
+    }
+    
+    /**
+     * Calculates player's score based on hits on opponent's board.
+     */
+    private int calculatePlayerScore() {
+        if (opponentBoard == null) return 0;
+        
+        int score = 0;
+        for (Ship ship : opponentBoard.getShips()) {
+            score += ship.getHitCount(); // 1 point per hit
+            if (ship.isSunk()) {
+                score += 5; // 5 bonus points for sinking a ship
+            }
+        }
+        
+        if (opponentBoard.areAllShipsSunk()) {
+            score += 50; // 50 bonus points for victory
+        }
+        
+        return score;
+    }
+    
+    /**
+     * Calculates opponent's score based on hits on player's board.
+     */
+    private int calculateOpponentScore() {
+        if (playerBoard == null) return 0;
+        
+        int score = 0;
+        for (Ship ship : playerBoard.getShips()) {
+            score += ship.getHitCount(); // 1 point per hit
+            if (ship.isSunk()) {
+                score += 5; // 5 bonus points for sinking a ship
+            }
+        }
+        
+        if (playerBoard.areAllShipsSunk()) {
+            score += 50; // 50 bonus points for victory
+        }
+        
+        return score;
+    }
+    
+    /**
+     * Counts alive ships on a board.
+     */
+    private int countAliveShips(Board board) {
+        if (board == null) return 0;
+        
+        int count = 0;
+        for (Ship ship : board.getShips()) {
+            if (!ship.isSunk()) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    /**
      * Handles a click on the opponent's board as an attack.
      */
     private void handleAttackClick(int row, int col) {
@@ -229,6 +414,9 @@ public class GamePanel extends JPanel {
         // Update the opponent's board to show the attack result and ship status
         opponentBoardPanel.updateShipStatusPanel();
         opponentBoardPanel.repaint();
+        
+        // Update scoreboard
+        updateScoreboard();
         
         // Switch turns
         setPlayerTurn(false);
@@ -288,6 +476,9 @@ public class GamePanel extends JPanel {
             // Update the player's board to show the result of the opponent's attack and ship status
             playerBoardPanel.updateShipStatusPanel();
             playerBoardPanel.repaint();
+            
+            // Update scoreboard
+            updateScoreboard();
             
             // Update the status message based on the result
             if (result.equals(Constants.ATTACK_HIT)) {
@@ -387,5 +578,8 @@ public class GamePanel extends JPanel {
         if (opponentBoard.getShips().isEmpty()) {
             setupOpponentBoard();
         }
+        
+        // Update scoreboard when player board is set
+        updateScoreboard();
     }
 } 

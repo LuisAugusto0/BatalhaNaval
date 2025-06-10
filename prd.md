@@ -37,8 +37,13 @@ Criar uma aplicação interativa de rede que simula o jogo Batalha Naval entre d
 - [ ] Mensagens de início e fim de partida
 
 #### **[~] UDP (Notificações)**
-- [~] Mensagens assíncronas (ex: desconexão, latência, tempo ocioso)
 - [x] Escuta em paralelo ao TCP sem bloquear o jogo
+- [~] Mensagens assíncronas leves, com propósito informativo e não crítico:
+  - [x] Avisos de presença ("Jogador conectado", "Aguardando adversário")
+  - [ ] Notificações de ociosidade ou latência
+  - [ ] Alertas de atividade (ex: “Jogador ausente”, “Jogador digitando”)
+- [ ] **Todas as notificações via UDP são tolerantes à perda e não alteram o estado do jogo**
+- [ ] **Toda lógica crítica do jogo permanece exclusivamente sob TCP** (jogadas, vitórias, estado de tabuleiros)
 
 #### **[✓] Multithreading**
 - [x] Thread da interface gráfica
