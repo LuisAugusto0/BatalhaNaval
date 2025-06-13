@@ -21,6 +21,10 @@ public class BoardPanel extends JPanel {
     private boolean isOpponentBoard;
     private BiConsumer<Integer, Integer> clickHandler;
     private BiConsumer<Integer, Integer> hoverHandler;
+    private Runnable hoverClearHandler;
+    
+    // Placeholder ships for opponent board (when we don't know real ship positions)
+    private java.util.List<Ship> placeholderShips;
     
     // Hover tracking
     private Position currentHoverPosition;
@@ -128,6 +132,12 @@ public class BoardPanel extends JPanel {
                 // Clear hover when mouse leaves the board
                 if (currentHoverPosition != null) {
                     currentHoverPosition = null;
+                    
+                    // Notify hover clear handler if set
+                    if (hoverClearHandler != null) {
+                        hoverClearHandler.run();
+                    }
+                    
                     repaint();
                 }
             }
@@ -167,6 +177,14 @@ public class BoardPanel extends JPanel {
     }
     
     /**
+     * Sets the handler for when hover is cleared (mouse exits board).
+     * @param handler Runnable to execute when hover is cleared
+     */
+    public void setHoverClearHandler(Runnable handler) {
+        this.hoverClearHandler = handler;
+    }
+    
+    /**
      * Gets the current hover position on this board.
      * @return Current hover position or null if not hovering
      */
@@ -191,6 +209,15 @@ public class BoardPanel extends JPanel {
      */
     public Position getOpponentHoverPosition() {
         return opponentHoverPosition;
+    }
+    
+    /**
+     * Sets placeholder ships for opponent board status display.
+     * @param ships List of placeholder ships
+     */
+    public void setPlaceholderShips(java.util.List<Ship> ships) {
+        this.placeholderShips = ships;
+        updateStatusPanel();
     }
     
     /**
@@ -231,7 +258,9 @@ public class BoardPanel extends JPanel {
         shipGrid.setBackground(Color.BLACK);
         
         // Add each ship and its status
-        for (Ship ship : board.getShips()) {
+        java.util.List<Ship> shipsToShow = (isOpponentBoard && placeholderShips != null) ? placeholderShips : board.getShips();
+        
+        for (Ship ship : shipsToShow) {
             JLabel nameLabel = new JLabel(ship.getName() + ":");
             nameLabel.setForeground(Color.WHITE);
             shipGrid.add(nameLabel);

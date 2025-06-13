@@ -162,4 +162,19 @@ public class Ship implements Serializable {
     public boolean isPositionHit(Position position) {
         return hitPositions.contains(position);
     }
+
+    /**
+     * Forces the ship to sink, used for placeholder ships in multiplayer
+     * when we receive a 'SUNK' message but don't know the exact positions.
+     */
+    public void forceSink() {
+        if (isSunk()) return; // Already sunk
+
+        hitPositions.clear(); // Ensure we start fresh
+        // Add dummy positions until the number of hits equals the ship's size
+        for (int i = 0; i < size; i++) {
+            // The position doesn't matter, only the count for isSunk()
+            hitPositions.add(new Position(-1, -1));
+        }
+    }
 } 

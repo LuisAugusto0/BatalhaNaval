@@ -21,6 +21,7 @@ public class OnlineSetupPanel extends JPanel {
     private JButton joinGameButton;
     private JButton backButton;
     private JButton testUdpButton;
+    private JButton proceedToSetupButton;
     
     /**
      * Constructor for the online setup panel.
@@ -65,10 +66,12 @@ public class OnlineSetupPanel extends JPanel {
         joinGameButton = new JButton("Join Game");
         backButton = new JButton("Back to Menu");
         testUdpButton = new JButton("Test UDP Message");
+        proceedToSetupButton = new JButton("Proceed to Ship Setup");
         testUdpButton.setEnabled(false);  // Initially disabled
+        proceedToSetupButton.setEnabled(false);  // Initially disabled
         
         // Style buttons
-        for (JButton button : new JButton[]{createGameButton, joinGameButton, backButton, testUdpButton}) {
+        for (JButton button : new JButton[]{createGameButton, joinGameButton, backButton, testUdpButton, proceedToSetupButton}) {
             button.setBackground(new Color(50, 50, 50));
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
@@ -100,6 +103,7 @@ public class OnlineSetupPanel extends JPanel {
         JPanel testPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         testPanel.setBackground(Color.BLACK);
         testPanel.add(testUdpButton);
+        testPanel.add(proceedToSetupButton);
         
         formPanel.add(buttonPanel, gbc);
         formPanel.add(testPanel, gbc);
@@ -115,6 +119,7 @@ public class OnlineSetupPanel extends JPanel {
         joinGameButton.addActionListener(e -> joinGame());
         backButton.addActionListener(e -> mainWindow.showMainMenuPanel());
         testUdpButton.addActionListener(e -> testUdpMessage());
+        proceedToSetupButton.addActionListener(e -> proceedToShipSetup());
         
         // Initial status message
         updateStatus("Ready to start or join a game.");
@@ -137,9 +142,11 @@ public class OnlineSetupPanel extends JPanel {
                     this::updateStatus
                 );
                 
-                // Enable test button when connected
+                // Enable test button and proceed button when connected
                 SwingUtilities.invokeLater(() -> {
                     testUdpButton.setEnabled(true);
+                    proceedToSetupButton.setEnabled(true);
+                    updateStatus("Server started! You can now proceed to ship setup.");
                 });
                 
             } catch (Exception e) {
@@ -175,9 +182,11 @@ public class OnlineSetupPanel extends JPanel {
                     this::updateStatus
                 );
                 
-                // Enable test button when connected
+                // Enable test button and proceed button when connected
                 SwingUtilities.invokeLater(() -> {
                     testUdpButton.setEnabled(true);
+                    proceedToSetupButton.setEnabled(true);
+                    updateStatus("Connected to server! You can now proceed to ship setup.");
                 });
                 
             } catch (Exception e) {
@@ -201,6 +210,18 @@ public class OnlineSetupPanel extends JPanel {
             updateStatus("UDP test message " + (sent ? "sent" : "failed to send") + ": " + message);
         } else {
             updateStatus("Cannot send UDP message - not connected");
+        }
+    }
+    
+    /**
+     * Proceeds to ship setup after successful connection.
+     */
+    private void proceedToShipSetup() {
+        if (networkManager.isConnected()) {
+            updateStatus("Proceeding to ship setup...");
+            mainWindow.showSetupPanel();
+        } else {
+            updateStatus("Cannot proceed - not connected to opponent");
         }
     }
     

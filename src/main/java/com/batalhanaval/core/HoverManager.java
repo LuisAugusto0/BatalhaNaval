@@ -1,6 +1,7 @@
 package com.batalhanaval.core;
 
 import com.batalhanaval.ui.BoardPanel;
+import com.batalhanaval.network.NetworkGameManager;
 
 /**
  * Manager class to coordinate hover tracking between BoardPanels and GameInfoManager.
@@ -11,6 +12,7 @@ public class HoverManager {
     private GameInfoManager gameInfoManager;
     private BoardPanel playerBoardPanel;
     private BoardPanel opponentBoardPanel;
+    private NetworkGameManager networkGameManager;
     
     /**
      * Constructor that initializes the hover manager.
@@ -18,6 +20,14 @@ public class HoverManager {
      */
     public HoverManager(GameInfoManager gameInfoManager) {
         this.gameInfoManager = gameInfoManager;
+    }
+    
+    /**
+     * Sets the network game manager for sending hover data.
+     * @param networkGameManager The network game manager
+     */
+    public void setNetworkGameManager(NetworkGameManager networkGameManager) {
+        this.networkGameManager = networkGameManager;
     }
     
     /**
@@ -49,8 +59,14 @@ public class HoverManager {
                 Position hoverPosition = new Position(row, col);
                 gameInfoManager.setOpponentBoardHover(hoverPosition);
                 
-                // This is where you would send UDP message to opponent
+                // Send hover position to opponent via UDP
                 sendHoverToOpponent(hoverPosition);
+            });
+            
+            // Set up hover clear handler for when mouse exits opponent's board
+            opponentBoardPanel.setHoverClearHandler(() -> {
+                gameInfoManager.setOpponentBoardHover(null);
+                sendHoverToOpponent(null);
             });
         }
     }
@@ -110,19 +126,18 @@ public class HoverManager {
     }
     
     /**
-     * Placeholder method for sending hover data to opponent via UDP.
-     * This should be implemented to actually send the data over the network.
-     * @param hoverPosition The position to send to the opponent
+     * Sends hover data to opponent via UDP.
+     * @param hoverPosition The position to send to the opponent (null to clear hover)
      */
     private void sendHoverToOpponent(Position hoverPosition) {
-        // TODO: Implement UDP sending logic here
-        String hoverData = gameInfoManager.formatHoverForTransmission(hoverPosition);
-        
-        // For now, just print what would be sent
-        System.out.println("UDP Send: Hover at " + hoverData);
-        
-        // Example of how this would be implemented:
-        // networkManager.sendUDPMessage("HOVER:" + hoverData);
+        if (networkGameManager != null) {
+            // Send hover via UDP using the network game manager
+            networkGameManager.sendHover(hoverPosition);
+        } else {
+            // Fallback: just print for debugging if network manager not set
+            String hoverData = gameInfoManager.formatHoverForTransmission(hoverPosition);
+            System.out.println("UDP Send: Hover at " + hoverData + " (NetworkGameManager not set)");
+        }
     }
     
     /**

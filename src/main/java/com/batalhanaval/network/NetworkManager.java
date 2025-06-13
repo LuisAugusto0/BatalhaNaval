@@ -30,6 +30,9 @@ public class NetworkManager {
     private boolean isServer = false;
     private boolean isConnected = false;
     
+    // Game manager integration
+    private NetworkGameManager gameManager;
+    
     /**
      * Constructor for the NetworkManager.
      */
@@ -175,10 +178,12 @@ public class NetworkManager {
                         } catch (NumberFormatException e) {
                             statusUpdater.accept("Invalid client UDP port received: " + portStr);
                         }
+                    } else {
+                        // Process game messages via NetworkGameManager
+                        if (gameManager != null) {
+                            gameManager.processTcpMessage(receivedMessage);
+                        }
                     }
-                    
-                    // TODO: Process other TCP messages (game moves)
-                    // This will be implemented in a later step
                 }
                 
                 // If we reach here, the connection was closed
@@ -219,8 +224,10 @@ public class NetworkManager {
                         remoteUdpPort = packet.getPort();
                     }
                     
-                    // TODO: Process received UDP messages (notifications)
-                    // This will be implemented in a later step
+                    // Process UDP messages via NetworkGameManager
+                    if (gameManager != null) {
+                        gameManager.processUdpMessage(receivedMessage);
+                    }
                 }
             } catch (IOException e) {
                 if (isConnected) {
@@ -331,5 +338,21 @@ public class NetworkManager {
      */
     public boolean isServer() {
         return isServer;
+    }
+    
+    /**
+     * Sets the network game manager for message processing.
+     * @param gameManager Network game manager
+     */
+    public void setGameManager(NetworkGameManager gameManager) {
+        this.gameManager = gameManager;
+    }
+    
+    /**
+     * Gets the network game manager.
+     * @return Network game manager
+     */
+    public NetworkGameManager getGameManager() {
+        return gameManager;
     }
 }

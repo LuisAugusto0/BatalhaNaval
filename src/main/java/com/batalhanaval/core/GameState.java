@@ -104,7 +104,7 @@ public class GameState implements Serializable {
         playerBoard.clear();
         
         List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship("Aircraft Carrier", Constants.CARRIER_SIZE));
+        ships.add(new Ship("Carrier", Constants.CARRIER_SIZE));
         ships.add(new Ship("Battleship", Constants.BATTLESHIP_SIZE));
         ships.add(new Ship("Cruiser", Constants.CRUISER_SIZE));
         ships.add(new Ship("Submarine", Constants.SUBMARINE_SIZE));

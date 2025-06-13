@@ -135,24 +135,38 @@ Se encontrar erros de compilação, verifique:
   - [x] Indicadores visuais de acertos/erros
   - [x] Painel de status para visualizar condição dos navios
   - [x] Linhas de orientação em acertos para mostrar direção do navio
+  - [x] Placar em tempo real com sistema de pontuação
+  - [x] Hover em tempo real mostrando mira do oponente
 - [x] Simulação do oponente (jogo local contra IA)
-- [x] Multithreading para UI e comunicação de rede (parcial)
+- [x] **Multiplayer Online Completo**
+  - [x] Protocolo TCP/UDP robusto para comunicação
+  - [x] Sincronização de turnos entre jogadores
+  - [x] Ataques e resultados em tempo real
+  - [x] Sistema de hover para mostrar mira do oponente
+  - [x] Detecção automática de vitória/derrota
+  - [x] Suporte a rendição e desconexão
+  - [x] Placar dinâmico com pontuação em tempo real
+- [x] Multithreading para UI e comunicação de rede
   - [x] Thread da interface gráfica (EDT)
   - [x] Threads separadas para operações de rede bloqueantes
   - [x] Atualização segura da UI a partir de threads de rede
-- [x] Comunicação em rede via TCP/UDP (parcial)
+  - [x] Processamento assíncrono de mensagens TCP/UDP
+- [x] Comunicação em rede via TCP/UDP
   - [x] Estabelecimento de conexão TCP cliente/servidor
   - [x] Configuração de portas UDP e troca de informações
   - [x] Envio e recebimento de mensagens UDP de teste
-  - [ ] Protocolo completo de jogo via rede
+  - [x] **Protocolo completo de jogo via rede**
+  - [x] **Mensagens TCP para ataques, resultados e controle de jogo**
+  - [x] **Mensagens UDP para hover e ping/pong**
 - [ ] Configuração em rede (Packet Tracer)
 - [ ] Análise de tráfego (Wireshark)
 
 ## Modos de Jogo
 1. **Modo Single Player (vs IA)** - Jogue contra um oponente simulado com ataques aleatórios
-2. **Modo Online** - Conecte-se a outro jogador:
+2. **Modo Multiplayer Online** - Jogue contra outro jogador humano em tempo real:
    - Como **Host**: Crie um jogo e aguarde a conexão de outro jogador
    - Como **Cliente**: Conecte-se a um jogo existente informando o IP do host
+   - **Recursos**: Turnos sincronizados, hover em tempo real, placar dinâmico, chat de status
 
 ## Configuração do Modo de Depuração
 Para ativar o modo de depuração e ver os navios do oponente em amarelo, altere a constante `DEBUG_MODE` para `true` na classe `App.java`:
@@ -169,15 +183,26 @@ Para jogar o modo online:
    - Seu firewall permite conexões nas portas 6969 (TCP) e 6970 (UDP)
    - Se estiver em redes diferentes, configure o encaminhamento de porta no roteador
 
+## Como Jogar Multiplayer
+
+### Guia Rápido
+1. **Host**: Execute o jogo → "Online Game" → "Create Game" → "Proceed to Ship Setup"
+2. **Cliente**: Execute o jogo → "Online Game" → Digite IP do host → "Join Game" → "Proceed to Ship Setup"
+3. **Ambos**: Posicionem navios → "Start Game"
+4. **Batalha**: Cliquem no tabuleiro inimigo para atacar (turnos alternados)
+
+### Recursos Multiplayer
+- ⚔️ **Ataques em tempo real** via TCP
+- 👁️ **Hover do oponente** via UDP (veja onde ele está mirando)
+- 🏆 **Placar dinâmico** com sistema de pontuação
+- 🔄 **Turnos sincronizados** automaticamente
+- 🏳️ **Rendição** disponível durante seu turno
+- 📊 **Feedback visual** completo (acertos, erros, navios afundados)
+
+Para guia detalhado, veja: **[MULTIPLAYER_GUIDE.md](MULTIPLAYER_GUIDE.md)**
+
 ## Próximos Passos
-1. Implementar a lógica completa de jogo em rede
-   - Sincronização de turnos entre jogadores
-   - Envio de ataques via TCP
-   - Processamento dos resultados ("Hit", "Miss", "Sunk")
-   - Detecção de fim de jogo
-2. Implementar notificações via UDP
-   - Mensagens de desconexão
-   - Informações de latência
-   - Notificações de tempo ocioso
+1. ✅ ~~Implementar a lógica completa de jogo em rede~~ **CONCLUÍDO**
+2. ✅ ~~Implementar notificações via UDP~~ **CONCLUÍDO**
 3. Configurar a rede no Cisco Packet Tracer
 4. Analisar o tráfego com Wireshark

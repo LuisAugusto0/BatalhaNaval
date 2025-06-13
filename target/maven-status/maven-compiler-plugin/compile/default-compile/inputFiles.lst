@@ -1,5 +1,6 @@
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/Ship.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/MainMenuPanel.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/network/NetworkMessageHandler.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/network/NetworkManager.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/StatusLabel.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/Constants.java
@@ -7,6 +8,9 @@
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/MainWindow.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/App.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/GamePanel.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/MultiplayerGamePanel.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/network/MessageProtocol.java
+/home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/network/NetworkGameManager.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/ui/BoardPanel.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/GameInfoManager.java
 /home/rafaelfleury/Documentos/GitHub/BatalhaNaval/src/main/java/com/batalhanaval/core/Board.java

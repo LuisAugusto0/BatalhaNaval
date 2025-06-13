@@ -161,7 +161,7 @@ public class SetupPanel extends JPanel {
         startGameButton = new JButton("Start Game");
         startGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startGameButton.setEnabled(false);
-        startGameButton.addActionListener(e -> mainWindow.showGamePanel());
+        startGameButton.addActionListener(e -> startGame());
         startGameButton.setBackground(new Color(50, 50, 50));
         startGameButton.setForeground(Color.WHITE);
         controlPanel.add(startGameButton);
@@ -307,6 +307,20 @@ public class SetupPanel extends JPanel {
      */
     private void updateStartButtonState() {
         startGameButton.setEnabled(availableShips.isEmpty());
+    }
+    
+    /**
+     * Starts the game - either single player or multiplayer based on network connection.
+     */
+    private void startGame() {
+        // Check if we're connected to a network (multiplayer mode)
+        if (mainWindow.getNetworkManager().isConnected()) {
+            // Multiplayer mode
+            mainWindow.showMultiplayerGamePanel();
+        } else {
+            // Single player mode
+            mainWindow.showGamePanel();
+        }
     }
     
     /**

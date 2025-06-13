@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import com.batalhanaval.Constants;
 import com.batalhanaval.core.Board;
 import com.batalhanaval.network.NetworkManager;
+import com.batalhanaval.network.NetworkGameManager;
 
 /**
  * Main window of the Battleship game, containing the setup and game panels.
@@ -18,12 +19,14 @@ public class MainWindow extends JFrame {
     private static final String MAIN_MENU_PANEL = "mainMenu";
     private static final String SETUP_PANEL = "setup";
     private static final String GAME_PANEL = "game";
+    private static final String MULTIPLAYER_GAME_PANEL = "multiplayerGame";
     private static final String ONLINE_SETUP_PANEL = "onlineSetup";
     
     // Panels
     private MainMenuPanel mainMenuPanel;
     private SetupPanel setupPanel;
     private GamePanel gamePanel;
+    private MultiplayerGamePanel multiplayerGamePanel;
     private OnlineSetupPanel onlineSetupPanel;
     
     // Layout manager
@@ -32,6 +35,7 @@ public class MainWindow extends JFrame {
     
     // Network manager
     private NetworkManager networkManager;
+    private NetworkGameManager networkGameManager;
     
     // Status bar
     private JLabel statusLabel;
@@ -55,6 +59,7 @@ public class MainWindow extends JFrame {
         
         // Initialize network manager
         networkManager = new NetworkManager();
+        networkGameManager = new NetworkGameManager(networkManager, this::updateStatusMessage);
         
         // Configure window layout
         cardLayout = new CardLayout();
@@ -65,12 +70,20 @@ public class MainWindow extends JFrame {
         mainMenuPanel = new MainMenuPanel(this);
         setupPanel = new SetupPanel(this);
         gamePanel = new GamePanel(this);
+        multiplayerGamePanel = new MultiplayerGamePanel(this, networkManager);
         onlineSetupPanel = new OnlineSetupPanel(this, networkManager);
+        
+        // Connect multiplayer game panel with network game manager
+        networkGameManager.setGamePanel(multiplayerGamePanel);
+        
+        // Connect network manager with network game manager
+        networkManager.setGameManager(networkGameManager);
         
         // Add panels to card layout
         contentPanel.add(mainMenuPanel, MAIN_MENU_PANEL);
         contentPanel.add(setupPanel, SETUP_PANEL);
         contentPanel.add(gamePanel, GAME_PANEL);
+        contentPanel.add(multiplayerGamePanel, MULTIPLAYER_GAME_PANEL);
         contentPanel.add(onlineSetupPanel, ONLINE_SETUP_PANEL);
         
         // Add panels to main layout
@@ -187,6 +200,35 @@ public class MainWindow extends JFrame {
         // Show the game panel
         cardLayout.show(contentPanel, GAME_PANEL);
         updateStatusMessage("Game started! Attack the opponent's board.");
+    }
+    
+    /**
+     * Shows the multiplayer game panel and passes the player's configured board.
+     */
+    public void showMultiplayerGamePanel() {
+        // Pass the board configured by the player to the MultiplayerGamePanel
+        Board playerBoard = setupPanel.getPlayerBoard();
+        multiplayerGamePanel.setPlayerBoard(playerBoard);
+        
+        // Show the multiplayer game panel
+        cardLayout.show(contentPanel, MULTIPLAYER_GAME_PANEL);
+        updateStatusMessage("Multiplayer game ready! Waiting for opponent...");
+    }
+    
+    /**
+     * Gets the network game manager.
+     * @return Network game manager
+     */
+    public NetworkGameManager getNetworkGameManager() {
+        return networkGameManager;
+    }
+    
+    /**
+     * Gets the network manager.
+     * @return Network manager
+     */
+    public NetworkManager getNetworkManager() {
+        return networkManager;
     }
     
     /**
