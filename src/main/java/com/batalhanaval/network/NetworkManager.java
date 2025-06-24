@@ -1,8 +1,18 @@
 package com.batalhanaval.network;
 
-import java.io.*;
-import java.net.*;
-import java.util.concurrent.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -83,6 +93,13 @@ public class NetworkManager {
                 // Send local UDP port information to client
                 sendTcpMessage("UDP_PORT:" + localUdpPort);
                 
+                // Wait a bit for client to set up UDP
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                
             } catch (IOException e) {
                 statusUpdater.accept("Error accepting client connection: " + e.getMessage());
             }
@@ -123,11 +140,33 @@ public class NetworkManager {
         // Send local UDP port to server for callbacks
         sendTcpMessage("CLIENT_UDP_PORT:" + localUdpPort);
         
+        // Wait a bit for server to process the port information
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        
         // Start UDP listener
         startUdpListener(statusUpdater);
         
         // Start TCP message listener
         startTcpListener(statusUpdater);
+        
+        // Send initial UDP ping to establish connection
+        executorService.submit(() -> {
+            try {
+                Thread.sleep(1000); // Wait for UDP listener to be ready
+                for (int i = 0; i < 3; i++) {
+                    if (sendUdpMessage(MessageProtocol.PING)) {
+                        statusUpdater.accept("UDP handshake ping sent (attempt " + (i + 1) + ")");
+                        Thread.sleep(500);
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
     }
     
     /**
@@ -205,23 +244,35 @@ public class NetworkManager {
     private void startUdpListener(Consumer<String> statusUpdater) {
         executorService.submit(() -> {
             try {
-                byte[] buffer = new byte[1024];
                 statusUpdater.accept("UDP listener started on port " + localUdpPort);
                 while (isConnected) {
-                    // Prepare packet for receiving
+                    // Create new buffer for each message to avoid corruption
+                    byte[] buffer = new byte[1024];
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                     
                     // Receive packet (blocks until data is received)
                     udpSocket.receive(packet);
                     
-                    // Process received data
-                    String receivedMessage = new String(packet.getData(), 0, packet.getLength());
-                    statusUpdater.accept("UDP received: " + receivedMessage);
+                    // Process received data with explicit UTF-8 encoding
+                    String receivedMessage = new String(packet.getData(), 0, packet.getLength(), 
+                                                      java.nio.charset.StandardCharsets.UTF_8);
+                    
+                    // Validate minimum message length
+                    if (receivedMessage.length() < 3) {
+                        statusUpdater.accept("UDP message too short, ignoring: " + receivedMessage.length() + " bytes");
+                        continue;
+                    }
+                    
+                    // Don't log hover messages to avoid spam
+                    if (!receivedMessage.startsWith("HOVER:")) {
+                        statusUpdater.accept("UDP received: " + receivedMessage);
+                    }
                     
                     // Store the sender's address and port for replies if needed
                     if (remoteAddress == null) {
                         remoteAddress = packet.getAddress();
                         remoteUdpPort = packet.getPort();
+                        statusUpdater.accept("Updated remote UDP address: " + remoteAddress.getHostAddress() + ":" + remoteUdpPort);
                     }
                     
                     // Process UDP messages via NetworkGameManager
@@ -264,7 +315,15 @@ public class NetworkManager {
         }
         
         try {
-            byte[] buffer = message.getBytes();
+            // Use UTF-8 explicitly to avoid encoding issues
+            byte[] buffer = message.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            
+            // Validate message size
+            if (buffer.length > 1024) {
+                System.err.println("UDP message too large: " + buffer.length + " bytes");
+                return false;
+            }
+            
             DatagramPacket packet = new DatagramPacket(
                     buffer, buffer.length, remoteAddress, remoteUdpPort);
             udpSocket.send(packet);
@@ -354,5 +413,51 @@ public class NetworkManager {
      */
     public NetworkGameManager getGameManager() {
         return gameManager;
+    }
+    
+    /**
+     * Tests UDP connectivity with the remote peer.
+     * @param statusUpdater Consumer for status messages
+     * @return True if UDP connection is working
+     */
+    public boolean testUdpConnectivity(Consumer<String> statusUpdater) {
+        if (!isConnected || udpSocket == null || remoteAddress == null) {
+            statusUpdater.accept("UDP test failed: Not properly connected");
+            return false;
+        }
+        
+        try {
+            // Send test message
+            String testMessage = "UDP_TEST:" + System.currentTimeMillis();
+            byte[] buffer = testMessage.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            
+            DatagramPacket packet = new DatagramPacket(
+                    buffer, buffer.length, remoteAddress, remoteUdpPort);
+            udpSocket.send(packet);
+            
+            statusUpdater.accept("UDP test message sent: " + testMessage);
+            return true;
+            
+        } catch (IOException e) {
+            statusUpdater.accept("UDP test failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Gets diagnostic information about the current network state.
+     * @return Diagnostic string
+     */
+    public String getNetworkDiagnostics() {
+        StringBuilder diag = new StringBuilder();
+        diag.append("=== Network Diagnostics ===\n");
+        diag.append("Is Server: ").append(isServer).append("\n");
+        diag.append("Is Connected: ").append(isConnected).append("\n");
+        diag.append("Local UDP Port: ").append(localUdpPort).append("\n");
+        diag.append("Remote UDP Port: ").append(remoteUdpPort).append("\n");
+        diag.append("Remote Address: ").append(remoteAddress != null ? remoteAddress.getHostAddress() : "null").append("\n");
+        diag.append("UDP Socket: ").append(udpSocket != null ? "OK" : "null").append("\n");
+        diag.append("TCP Socket: ").append(tcpClientSocket != null && !tcpClientSocket.isClosed() ? "OK" : "closed/null").append("\n");
+        return diag.toString();
     }
 }

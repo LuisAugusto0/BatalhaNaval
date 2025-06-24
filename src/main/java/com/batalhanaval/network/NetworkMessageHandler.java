@@ -1,7 +1,8 @@
 package com.batalhanaval.network;
 
-import com.batalhanaval.core.Position;
 import java.util.function.Consumer;
+
+import com.batalhanaval.core.Position;
 
 /**
  * Handles incoming network messages for multiplayer Battleship game.
@@ -141,6 +142,18 @@ public class NetworkMessageHandler {
      */
     public void processUdpMessage(String message) {
         if (message == null || message.trim().isEmpty()) {
+            return;
+        }
+        
+        // Additional validation for UDP messages
+        if (message.length() > 1000) {
+            statusUpdater.accept("UDP message too large, ignoring: " + message.length() + " chars");
+            return;
+        }
+        
+        // Check for invalid characters that might indicate corruption
+        if (message.contains("\u0000") || message.contains("\uFFFD")) {
+            statusUpdater.accept("UDP message contains invalid characters, ignoring");
             return;
         }
         

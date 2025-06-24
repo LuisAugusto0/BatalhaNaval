@@ -1,10 +1,25 @@
 package com.batalhanaval.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import com.batalhanaval.Constants;
 import com.batalhanaval.core.Board;
@@ -63,7 +78,7 @@ public class SetupPanel extends JPanel {
     private void setupControlPanel() {
         controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-        controlPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        contr   olPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         controlPanel.setPreferredSize(new Dimension(200, 400));
         controlPanel.setBackground(Color.BLACK);
         
@@ -95,7 +110,7 @@ public class SetupPanel extends JPanel {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
-                    c.setBackground(new Color(80, 80, 80));
+                    c.setBackground(new Color(80, 80, 80)); 
                 } else {
                     c.setBackground(new Color(50, 50, 50));
                 }
